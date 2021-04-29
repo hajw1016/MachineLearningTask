@@ -7,7 +7,6 @@ from sklearn.linear_model import LinearRegression
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import SGD, Adam
-from sklearn.metrics import r2_score
 from DataIndex import *
 
 ###################
@@ -63,17 +62,21 @@ def build_model():
     model.compile(loss='mean_squared_error', optimizer=Adam(learning_rate=0.01))
     return model
 
+def get_mse(y_target, y_predict):
+    mse = np.square(y_target - y_predict).mean()
+    return mse.values[0]
+
 LinearModel = LinearRegression()
-scores = []
-nn_scores = []
+LinearMSE = []
+NN_MSE = []
+
 kfold = KFold(n_splits=5, shuffle=True, random_state=42)
 for i, (train, test) in enumerate(kfold.split(x, y)):
     LinearModel.fit(x.iloc[train,:], y.iloc[train,:])
-    score = LinearModel.score(x.iloc[test,:], y.iloc[test,:])
-    scores.append(score)
-    model = build_model()
-    model.fit(x.iloc[train,:], y.iloc[train,:], epochs=1000, batch_size=10)
-    nn_scores.append(r2_score(y.iloc[test,:],model.predict(x.iloc[test,:])))
+    LinearMSE.append(get_mse(y.iloc[test,:],LinearModel.predict(x.iloc[test,:])))
+    NN_model = build_model()
+    NN_model.fit(x.iloc[train,:], y.iloc[train,:], epochs=1000, batch_size=20)
+    NN_MSE.append(get_mse(y.iloc[test,:],NN_model.predict(x.iloc[test,:])))
 
-print("Linear Regression R-Square: \n", scores)
-print("Neural Network R-Squaure : \n", nn_scores)
+print("Linear Regression MSE: \n", LinearMSE)
+print("Neural Network MSE: \n", NN_MSE)
