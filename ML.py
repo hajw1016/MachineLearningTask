@@ -49,9 +49,9 @@ data_preprocessed = pd.concat([data_numerics_only, data_one_hot], axis=1,join="i
 del data_preprocessed['Compression_Ratio']
 
 
-######################
-## Regression
-######################
+############################
+## Regression (K-Fold)
+############################
 y = pd.DataFrame(data_preprocessed["Normalized_Losses"])
 x = pd.DataFrame(data_preprocessed.iloc[:,1:])
 
@@ -75,5 +75,5 @@ for i, (train, test) in enumerate(kfold.split(x, y)):
     model.fit(x.iloc[train,:], y.iloc[train,:], epochs=1000, batch_size=10)
     nn_scores.append(r2_score(y.iloc[test,:],model.predict(x.iloc[test,:])))
 
-print(scores)
-print(nn_scores)
+print("Linear Regression R-Square: \n", scores)
+print("Neural Network R-Squaure : \n", nn_scores)
