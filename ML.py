@@ -8,6 +8,7 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import SGD, Adam
 from sklearn.metrics import r2_score
+from DataIndex import *
 
 ###################
 ## Input Data
